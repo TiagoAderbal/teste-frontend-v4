@@ -1,0 +1,22 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #003184;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.map {
+  width: 70% !important;
+  height: 70vh !important;
+  margin: 0 auto; 
+  border-radius: 15px;
+  margin-top: 3rem;
+}
