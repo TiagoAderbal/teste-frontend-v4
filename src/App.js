@@ -23,6 +23,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <nav>
+          <img className="logo" src="/assets/img/aiko.png" alt="logo empresa Aiko" />
+        </nav>
         <Map onMarkerClick={handleMarkerClick}></Map>
         <button
           className="btn btn-success mt-4"

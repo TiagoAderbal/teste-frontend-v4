@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
@@ -19,6 +25,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapComponent = ({ onMarkerClick }) => {
   const [latestPositions, setLatestPositions] = useState([]);
+  const [selectedEquipment, setSelectedEquipment] = useState(null);
 
   const getEquipmentDetails = (equipmentId) => {
     const equipment = equipmentData.find((item) => item.id === equipmentId);
@@ -68,12 +75,23 @@ const MapComponent = ({ onMarkerClick }) => {
           equipmentId: equipment.equipmentId,
           lat: latestPosition.lat,
           lon: latestPosition.lon,
+          positions: positions,
         };
       });
       setLatestPositions(latestPositionsData);
     };
     findLatestPositions();
   }, []);
+
+  const handleMarkerClick = (equipmentId) => {
+    setSelectedEquipment(equipmentId);
+    const { model, name } = getEquipmentDetails(equipmentId);
+    onMarkerClick(equipmentId, name, model);
+  };
+
+  const clearSelectionLocal = () => {
+    setSelectedEquipment(null); // Limpa a seleção do equipamento
+  };
 
   return (
     <MapContainer center={[-19.126536, -45.947756]} zoom={9} className="map">
@@ -87,24 +105,47 @@ const MapComponent = ({ onMarkerClick }) => {
           position.equipmentId,
         );
 
+        const polylinePositions = position.positions.map((pos) => [
+          pos.lat,
+          pos.lon,
+        ]); // Extrair coordenadas
+
+        // Mostrar somente o marcador e trajeto do equipamento selecionado
+        if (selectedEquipment && selectedEquipment !== position.equipmentId) {
+          return null;
+        }
+
         return (
-          <Marker
-            key={position.equipmentId}
-            position={[position.lat, position.lon]}
-            eventHandlers={{
-              click: () => onMarkerClick(position.equipmentId, name, model),
-            }}
-          >
-            <Popup>
-              {name} <br />
-              Modelo: {model} <br />
-              Estado: <span style={{ color: stateColor }}>
-                {stateName}
-              </span>{" "}
-              <br />
-              Latitude: {position.lat}, Longitude: {position.lon}
-            </Popup>
-          </Marker>
+          <React.Fragment key={position.equipmentId}>
+            <Marker
+              position={[position.lat, position.lon]}
+              eventHandlers={{
+                click: () => handleMarkerClick(position.equipmentId), // Clicar para selecionar o equipamento
+              }}
+            >
+              <Popup>
+                {name} <br />
+                Modelo: {model} <br />
+                Estado: <span style={{ color: stateColor }}>
+                  {stateName}
+                </span>{" "}
+                <br />
+                Latitude: {position.lat}, Longitude: {position.lon}
+                <br />
+                <button
+                  className="btn btn-danger mt-2 pt-0 p-1"
+                  style={{ height: "1.2rem", fontSize: "0.8rem" }}
+                  onClick={clearSelectionLocal} // Fechar e limpar a seleção
+                >
+                  Fechar
+                </button>
+              </Popup>
+            </Marker>
+            {/* Exibir o Polyline apenas se o equipamento estiver selecionado */}
+            {selectedEquipment === position.equipmentId && (
+              <Polyline positions={polylinePositions} color="blue" />
+            )}
+          </React.Fragment>
         );
       })}
     </MapContainer>
