@@ -4,26 +4,24 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
-import markerIconRed from "leaflet/dist/images/pin.png";
+import markerIconRed from "../components/img/pin.png";
 import equipmentPositionHistory from "../data/equipmentPositionHistory.json";
 import equipmentData from "../data/equipment.json";
 import equipmentDetails from "../data/equipmentModel.json";
 import equipmentState from "../data/equipmentState.json";
 import equipmentStateHistory from "../data/equipmentStateHistory.json";
 
-// Ícone padrão
 let DefaultIcon = L.icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Ícone personalizado para o trajeto (cor e formato diferentes)
 let PathIcon = L.icon({
-  iconUrl: markerIconRed, // Coloque o link para o ícone personalizado
-  iconSize: [25, 24], // Tamanho do ícone
-  iconAnchor: [12, 41], // Ponto de ancoragem
-  popupAnchor: [1, -34], // Local do popup
+  iconUrl: markerIconRed,
+  iconSize: [25, 24],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
 });
 
 const MapComponent = ({ onMarkerClick }) => {
@@ -93,7 +91,7 @@ const MapComponent = ({ onMarkerClick }) => {
   };
 
   const clearSelectionLocal = () => {
-    setSelectedEquipment(null); // Limpa a seleção do equipamento
+    setSelectedEquipment(null);
   };
 
   return (
@@ -117,7 +115,7 @@ const MapComponent = ({ onMarkerClick }) => {
             <Marker
               position={[position.lat, position.lon]}
               eventHandlers={{
-                click: () => handleMarkerClick(position.equipmentId), // Clicar para selecionar o equipamento
+                click: () => handleMarkerClick(position.equipmentId),
               }}
             >
               <Popup>
@@ -132,24 +130,20 @@ const MapComponent = ({ onMarkerClick }) => {
                 <button
                   className="btn btn-danger mt-2 pt-0 p-1"
                   style={{ height: "1.2rem", fontSize: "0.8rem" }}
-                  onClick={clearSelectionLocal} // Fechar e limpar a seleção
+                  onClick={clearSelectionLocal}
                 >
                   Fechar
                 </button>
               </Popup>
             </Marker>
 
-            {/* Exibir o Polyline apenas se o equipamento estiver selecionado */}
             {selectedEquipment === position.equipmentId && (
               <>
-                {/* <Polyline positions={polylinePositions} color="#7f7fff" /> */}
-
-                {/* Adicionar marcadores em cada ponto do trajeto */}
                 {position.positions.map((pos, index) => (
                   <Marker
                     key={index}
                     position={[pos.lat, pos.lon]}
-                    icon={PathIcon} // Ícone personalizado para os pontos de trajeto
+                    icon={PathIcon}
                   >
                     <Popup>
                       Data: {new Date(pos.date).toLocaleString()} <br />
